@@ -1,0 +1,24 @@
+import '../src/config';
+import dbConfig from '../src/config/database';
+import Database from '../src/database';
+
+
+let db;
+
+class TestsHelpers {
+    static async startDb() {
+        db = new Database('test', dbConfig);
+        await db.connect();
+        return db;
+    }
+
+    static async stopDb() {
+        await db.disconnect();
+    }
+
+    static async syncDb() {
+        await db.sync();
+    }
+}
+
+export default TestsHelpers;
