@@ -1,5 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import bcrypt from 'bcrypt';
+import environment from '../config/environment';
 
 export default (sequelize) => {
     class User extends Model {
@@ -64,4 +65,6 @@ export default (sequelize) => {
         const hashedPassword = await User.hashPassword(user.password);
         user.password = hashedPassword;
     });
+
+    return User;
 };
