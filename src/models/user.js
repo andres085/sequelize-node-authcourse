@@ -6,7 +6,8 @@ export default (sequelize) => {
     class User extends Model {
 
         static associate(models) {
-            
+            User.hasMany(models['Role']);
+            User.hasOne(models['RefreshToken']);
         }
 
         static async hashPassword(password) {
