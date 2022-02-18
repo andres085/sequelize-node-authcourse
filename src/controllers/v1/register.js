@@ -29,13 +29,13 @@ router.post('/register', runAsyncWrapper(async (req, res) => {
 
         if (roles && Array.isArray(roles)) {
             const rolesToSave = [];
-            roles.forEach(role => {
+            for (const role of roles) {
                 const newRole = await Role.create({ role });
                 rolesToSave.push(newRole);
-            });
+            }
             await newUser.addRoles(rolesToSave);
         }
-
+        
         return res.send({
             success: true,
             message: 'User successfully registered',
