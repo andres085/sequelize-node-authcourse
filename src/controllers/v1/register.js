@@ -19,7 +19,6 @@ router.post('/register', runAsyncWrapper(async (req, res) => {
             message: 'User already exists'
         });
     }
-
     try {
         const newUser = await User.create({ email, password });
         const jwtPayload = {email};
@@ -45,10 +44,10 @@ router.post('/register', runAsyncWrapper(async (req, res) => {
             }
         })
     } catch (error) {
-        console.error('Error registering the user:\n', err.stack);
+        console.error('Error registering the user:\n', error.stack);
         return res.status(500).send({
             success: false,
-            message: err.message
+            message: error.message
         });
     }
 }))

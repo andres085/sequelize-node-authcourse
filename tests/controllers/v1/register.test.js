@@ -50,7 +50,7 @@ describe('register', () => {
     });
 
     it('should not create a new user if email and password are not provided', async () => {
-        await request(app).post('/v1/register').send({}).expect(500);
+        await request(app).post('/v1/register').send({email: "", password: ""}).expect(500, {success: false, message: 'Validation error: Not a valid email address'});
         const { User} = models;
         const users = await User.findAll();
         expect(users.length).toEqual(0);
