@@ -5,7 +5,7 @@ import runAsyncWrapper from '../../utils/runAsyncWrapper';
 
 const router = Router();
 
-const { User, Role, sequelize } = models;
+const { User } = models;
 
 router.post('/login', runAsyncWrapper(async (req, res) => {
     const { email, password } = req.body;
