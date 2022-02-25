@@ -1,7 +1,7 @@
-import { request } from 'supertest';
 import '../src/config';
-import dbConfig from '../src/config/database';
 import Database from '../src/database';
+import dbConfig from '../src/config/database';
+import request from 'supertest';
 
 
 let db;
