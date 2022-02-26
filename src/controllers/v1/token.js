@@ -2,6 +2,7 @@ import { Router } from 'express';
 import models from '../../models';
 import JWTUtils from '../../utils/jwt-utils';
 import runAsyncWrapper from '../../utils/runAsyncWrapper';
+import requiresAuth from '../../middlewares/requiresAuth';
 
 const router = Router();
 

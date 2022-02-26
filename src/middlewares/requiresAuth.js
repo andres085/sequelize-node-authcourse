@@ -32,9 +32,11 @@ function requiresAuth(tokenType = 'accessToken') {
             switch (tokenType) {
                 case 'refreshToken':
                     jwt = JWTUtils.verifyRefreshtoken(token);
+                    break;
                 case 'accessToken':
                 default:
                     jwt = JWTUtils.verifyAccessToken(token);
+                    break;
             }
             req.body.jwt = jwt;
             next();
