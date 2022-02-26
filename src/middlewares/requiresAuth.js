@@ -1,6 +1,6 @@
-import JWTUtils from '../utils/jwt-utils';
+import JWTUtils from "../utils/jwt-utils";
 
-function requiresAuth(tokenType = 'accessToken') {
+export default function requiresAuth(tokenType = 'accessToken') {
     return function (req, res, next) {
         const authHeader = req.headers.authorization
 
@@ -32,22 +32,16 @@ function requiresAuth(tokenType = 'accessToken') {
             switch (tokenType) {
                 case 'refreshToken':
                     jwt = JWTUtils.verifyRefreshtoken(token);
-                    break;
+                break;
                 case 'accessToken':
-                default:
                     jwt = JWTUtils.verifyAccessToken(token);
                     break;
-            }
-            req.body.jwt = jwt;
-            next();
-        } catch (error) {
-              return res.status(401).send({
-                success: false,
-                message: 'Invalid Token'
-            });
+                }
+                req.body.jwt = jwt;
+                next();
+        } catch (err) {
+            return res.status(401).send({ success: false, message: 'Invalid Token' });
         }
         
     }
 }
-
-export default requiresAuth;
