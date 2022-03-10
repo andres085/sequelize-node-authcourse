@@ -15,10 +15,6 @@ export default (sequelize) => {
             return bcrypt.hash(password, environment.saltRounds);
         }
 
-        static async comparePasswords(password, hashedPassword) {
-            return bcrypt.compare(password, hashedPassword);
-        }
-
         static async createNewUser({ email, password, username, firstname, roles }) {
             return sequelize.transaction(async () => {
                 const jwtPayload = { email };
@@ -76,8 +72,22 @@ export default (sequelize) => {
     }, {
         sequelize,
         modelName: 'User',
-        indexes: [{unique: true, fields: ['email']}],
+        indexes: [{ unique: true, fields: ['email'] }],
+        defaultScope: {
+            attributes: {
+                exclude: ['password']
+            }
+        },
+        scopes: {
+            withPassword: {
+                attributes: {include: ['password']}
+            }
+        }
     });
+
+    User.prototype.comparePasswords = async function (password) {
+        return bcrypt.compare(password, this.password);
+    }
 
     User.beforeSave(async (user, options) => {
         const hashedPassword = await User.hashPassword(user.password);

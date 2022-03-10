@@ -10,6 +10,10 @@ describe('User', () => {
         await TestsHelpers.stopDb();
     });
 
+    beforeEach(async () => {
+        await TestsHelpers.syncDb();
+    });
+
     describe('static methods', () => {
         describe('hashPassword', () => {
             it('should encrypt the password correctly', async () => {
@@ -22,23 +26,29 @@ describe('User', () => {
         })
     });
 
-    describe('comparePasswords', () => {
-        it('should return true if the hashed password is the same as the original password', async () => {
-            const { User } = models;
-            const password = 'Test123#';
-            const hashedPassword = await User.hashPassword(password);
-            const arePasswordEqual = await User.comparePasswords(password, hashedPassword);
-            expect(arePasswordEqual).toBe(true);
-        });
-        it('should return false if the hashed password is not the same as the original password', async () => {
-            const { User } = models;
-            const password = 'Test123#';
-            const hashedPassword = await User.hashPassword(password);
-            const arePasswordEqual = await User.comparePasswords('TestAsd123!', hashedPassword);
-            expect(arePasswordEqual).toBe(false);
+    describe('instance methods', () => {
+        describe('comparePasswords', () => {
+            it('should return true if the hashed password is the same as the original password', async () => {
+                const { User } = models;
+                const email = 'test@example.com';
+                const password = 'Test123#';
+                const user = await User.create({ email, password });
+                const hashedPassword = await User.hashPassword(password);
+                const arePasswordEqual = await user.comparePasswords(password, hashedPassword);
+                expect(arePasswordEqual).toBe(true);
+            });
+            it('should return false if the hashed password is not the same as the original password', async () => {
+                const { User } = models;
+                const email = 'test@example.com';
+                const password = 'Test123#';
+                const user = await User.create({ email, password });
+                const hashedPassword = await User.hashPassword(password);
+                const arePasswordEqual = await user.comparePasswords('TestAsd123!', hashedPassword);
+                expect(arePasswordEqual).toBe(false);
+            });
         });
     });
-
+    
     describe('hooks', () => {
         beforeEach(async () => {
             await TestsHelpers.syncDb();
