@@ -1,14 +1,13 @@
 import { Router } from 'express';
 import models from '../../models';
-import JWTUtils from '../../utils/jwt-utils';
 import runAsyncWrapper from '../../utils/runAsyncWrapper';
 
 const router = Router();
 
-const { User, Role, RefreshToken, sequelize } = models;
+const { User } = models;
 
 router.post('/register', runAsyncWrapper(async (req, res) => {
-    const { email, password, roles } = req.body;
+    const { email } = req.body;
     const user = await User.findOne({
         where: { email }
     });
@@ -19,19 +18,8 @@ router.post('/register', runAsyncWrapper(async (req, res) => {
             message: 'User already exists'
         });
     }
-    const result = await sequelize.transaction(async () => {
-        const jwtPayload = { email };
-        const accessToken = JWTUtils.generateAcessToken(jwtPayload);
-        const refreshToken = JWTUtils.generateRefreshToken(jwtPayload);
+    const result = await User.createNewUser(req.body);
 
-        let rolesToSave = [];
-        if (roles && Array.isArray(roles)) {
-            rolesToSave = roles.map((role) => ({ role }));
-        }
-        await User.create({ email, password, Roles: rolesToSave, RefreshToken: {token: refreshToken} }, {include: [Role, RefreshToken]});
-    
-        return { accessToken, refreshToken };
-    });
     const { accessToken, refreshToken } = result;
     
     return res.send({
