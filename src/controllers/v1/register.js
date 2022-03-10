@@ -5,7 +5,7 @@ import runAsyncWrapper from '../../utils/runAsyncWrapper';
 
 const router = Router();
 
-const { User, Role, sequelize } = models;
+const { User, Role, RefreshToken, sequelize } = models;
 
 router.post('/register', runAsyncWrapper(async (req, res) => {
     const { email, password, roles } = req.body;
@@ -20,20 +20,16 @@ router.post('/register', runAsyncWrapper(async (req, res) => {
         });
     }
     const result = await sequelize.transaction(async () => {
-        const newUser = await User.create({ email, password });
-        const jwtPayload = {email};
+        const jwtPayload = { email };
         const accessToken = JWTUtils.generateAcessToken(jwtPayload);
         const refreshToken = JWTUtils.generateRefreshToken(jwtPayload);
-        await newUser.createRefreshToken({ token: refreshToken });
+
+        let rolesToSave = [];
         if (roles && Array.isArray(roles)) {
-            const rolesToSave = [];
-            for (const role of roles) {
-                const newRole = await Role.create({ role });
-                rolesToSave.push(newRole);
+            rolesToSave = roles.map((role) => ({ role }));
         }
-            await newUser.addRoles(rolesToSave);
-        }
-        
+        await User.create({ email, password, Roles: rolesToSave, RefreshToken: {token: refreshToken} }, {include: [Role, RefreshToken]});
+    
         return { accessToken, refreshToken };
     });
     const { accessToken, refreshToken } = result;
